@@ -145,7 +145,7 @@ body {
 	text-align: center;
 }
 
-/* #progressBg {
+#progressBg {
 	margin-top: 15px;
 	width: 100%;
 	height: auto;
@@ -153,32 +153,32 @@ body {
 	background-color: #1F1F1F;
 } */
 
-/* #progressBar {
+#progressBar {
 	border-radius: 5px;
 	height: 5px;
 	width: 20%;
 	background-color: #ffffff;
 	margin: 10px 0px;
 	transition: all 1s ease;
-} */
+}
 
-/* #times {
+#times {
 	position: relative;
 	height: 16px;
 	font-size: 16px;
 	font-weight: 700;
 	line-height: 2.2;
-} */
+}
 
-/* #progressTime {
+#progressTime {
 	position: absolute;
-} */
+}
 
-/* #timeRemaining {
+#timeRemaining {
 	position: absolute;
 	width: 100%;
 	text-align: right;
-} */
+}
 
 .text-show {
 	opacity: 1;

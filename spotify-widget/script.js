@@ -15,6 +15,7 @@ const visibilityDuration = urlParams.get("duration") || 0;
 
 let currentState = false;
 let currentSongUri = "";
+let hideTimeout;
 
 
 
@@ -93,7 +94,7 @@ async function GetCurrentlyPlaying(refreshInterval) {
 	catch (error)
 	{
 		console.debug(error);
-		SetVisibility(false);
+		// SetVisibility(false);
 		
 		// Try again in 2 seconds
 		setTimeout(() => {
@@ -125,11 +126,12 @@ function UpdatePlayer(data) {
 		else
 		{
 			console.debug("Showing player...");
+			clearTimeout(hideTimeout);
 			setTimeout(() => {
 				SetVisibility(true);
 
 				if (visibilityDuration > 0) {
-					setTimeout(() => {
+					hideTimeout = setTimeout(() => {
 						SetVisibility(false, false);
 					}, visibilityDuration * 1000);
 				}
@@ -140,11 +142,12 @@ function UpdatePlayer(data) {
 	if (songUri != currentSongUri) {		
 		if (isPlaying) {
 			console.debug("Showing player...");
+			clearTimeout(hideTimeout);
 			setTimeout(() => {
 				SetVisibility(true);
 
 				if (visibilityDuration > 0) {
-					setTimeout(() => {
+					hideTimeout = setTimeout(() => {
 						SetVisibility(false, false);
 					}, visibilityDuration * 1000);
 				}
@@ -186,7 +189,7 @@ function UpdateTextLabel(div, text) {
 		div.setAttribute("class", "text-fade");
 		setTimeout(() => {
 			div.innerText = text;
-			div.setAttribute("class", ".text-show");
+			div.setAttribute("class", "text-show");
 		}, 500);
 	}
 }
