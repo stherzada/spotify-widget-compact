@@ -73,7 +73,7 @@ async function FetchAccessToken(code) {
         refresh_token = responseData.refresh_token;			// Unsure if we need to replace the refresh_token but do it just in case
         access_token = responseData.access_token;			// Save access token for all future API calls
 
-        browserSourceURL = `${baseURL}?client_id=${client_id}&client_secret=${client_secret}&refresh_token=${refresh_token}`;
+        browserSourceURL = `${baseURL}spotify-widget/?client_id=${client_id}&client_secret=${client_secret}&refresh_token=${refresh_token}`;
         document.getElementById("authorizationBox").style.display = 'inline';
     }
     else
