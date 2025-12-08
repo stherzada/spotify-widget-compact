@@ -37,7 +37,7 @@ body {
 	transition: all 0.5s ease;
 }
 
-/* #albumArtBox {
+#albumArtBox {
 	background: rgba(0, 0, 0, 0.5);
 	position: relative;
 	border-radius: var(--corner-radius);
@@ -58,7 +58,7 @@ body {
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
-} */
+}
 
 #songInfoBox {
 	position: relative;
