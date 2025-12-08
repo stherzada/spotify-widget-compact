@@ -46,7 +46,7 @@ async function RefreshAccessToken() {
 	{
 		const responseData = await response.json();
 		console.debug(responseData);
-		//refresh_token = responseData.refresh_token;			// Unsure if we need to replace the refresh_token but do it just in case
+		refresh_token = responseData.refresh_token;			// Unsure if we need to replace the refresh_token but do it just in case
 		access_token = responseData.access_token;			// Save access token for all future API calls
 	}
 	else
@@ -55,7 +55,7 @@ async function RefreshAccessToken() {
 	}
 }
 
-async function GetCurrentlyPlaying(refreshInterval) {
+async function GetCurrentlyPlaying() {
 	try {
 		// Get the current player information from Spotify
 		const response = await fetch("https://api.spotify.com/v1/me/player/currently-playing", {
@@ -155,7 +155,7 @@ function UpdatePlayer(data) {
 	}
 
 	// Set thumbnail
-	// UpdateAlbumArt(document.getElementById("albumArt"), albumArt);
+	UpdateAlbumArt(document.getElementById("albumArt"), albumArt);
 	UpdateAlbumArt(document.getElementById("backgroundImage"), albumArt);
 
 	// Set song info
@@ -168,13 +168,13 @@ function UpdatePlayer(data) {
 	const timeRemaining = ConvertSecondsToMinutesSoThatItLooksBetterOnTheOverlay(duration - progress);
 	console.debug(`Progress: ${progressTime}`);
 	console.debug(`Time Remaining: ${timeRemaining}`);
-	// document.getElementById("progressBar").style.width = `${progressPerc}%`;
-	// document.getElementById("progressTime").innerHTML = progressTime;
-	// document.getElementById("timeRemaining").innerHTML = `-${timeRemaining}`;
+	document.getElementById("progressBar").style.width = `${progressPerc}%`;
+	document.getElementById("progressTime").innerHTML = progressTime;
+	document.getElementById("timeRemaining").innerHTML = `-${timeRemaining}`;
 	document.getElementById("backgroundImage").style.clipPath = `inset(0 ${100 - progressPerc}% 0 0)`;
 
 	setTimeout(() => {
-		// document.getElementById("albumArtBack").src = albumArt;
+		document.getElementById("albumArtBack").src = albumArt;
 		document.getElementById("backgroundImageBack").src = albumArt;
 	}, 1000);
 }
@@ -255,10 +255,10 @@ function resize() {
 //   HIDE THE ALBUM ART, BECAUSE THAT'S WHAT IT'S SUPPOSED TO DO   //
 /////////////////////////////////////////////////////////////////////
 
-// if (hideAlbumArt) {
-// 	document.getElementById("albumArtBox").style.display = "none";
-// 	document.getElementById("songInfoBox").style.width = "calc(100% - 20px)";
-// }
+if (hideAlbumArt) {
+	document.getElementById("albumArtBox").style.display = "none";
+	document.getElementById("songInfoBox").style.width = "calc(100% - 20px)";
+}
 
 
 
