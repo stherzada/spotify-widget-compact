@@ -1,6 +1,6 @@
 * {
 	--corner-radius: 25px;
-	--album-art-size: 50px;
+	--album-art-size: 94px;
 }
 
 body {
@@ -42,7 +42,7 @@ body {
 	position: relative;
 	border-radius: var(--corner-radius);
 	overflow: hidden;
-	margin: 0px 10px 0px 0px; /* Increased right margin slightly */
+	margin: 0px 8px 0px 0px;
 	object-fit: cover;
 	width: var(--album-art-size);
 	flex-shrink: 0; /* Prevent album art from shrinking */
@@ -146,42 +146,45 @@ body {
 	text-align: center;
 }
 
-#progressBg {
-	margin-top: 15px;
-	width: 100%;
-	height: auto;
-	border-radius: 5px;
-	background-color: #1F1F1F;
-} */
-
-#progressBar {
-	border-radius: 5px;
-	height: 5px;
-	width: 20%;
-	background-color: #ffffff;
-	margin: 10px 0px;
-	transition: all 1s ease;
-}
-
 #times {
 	position: relative;
 	height: 16px;
-	font-size: 16px;
+	font-size: 14px;
 	font-weight: 700;
-	line-height: normal; /* Fixed line-height issue */
-	display: flex; /* Use flexbox for better alignment */
-	justify-content: space-between; /* Space out time and remaining */
-	margin-top: 5px; /* Add some spacing */
+	line-height: normal;
+	display: flex;
+	align-items: center; /* Center vertically */
+	justify-content: space-between;
+	margin-top: 8px;
+}
+
+#progressBg {
+	margin: 0 10px; /* Spacing between times */
+	flex-grow: 1; /* Take up available space */
+	height: 4px;
+	border-radius: 2px;
+	background-color: rgba(255, 255, 255, 0.3); /* Dim background for bar */
+}
+
+#progressBar {
+	border-radius: 2px;
+	height: 100%;
+	width: 0%; /* Will be set by JS */
+	background-color: #ffffff;
+	margin: 0;
+	transition: width 1s linear; /* Smooth transition */
 }
 
 #progressTime {
-	position: relative; /* Changed from absolute to relative */
+	position: relative;
+    min-width: 35px; /* Prevent jumping */
 }
 
 #timeRemaining {
-	position: relative; /* Changed from absolute to relative */
-	width: auto; /* Allow auto width */
+	position: relative;
+	width: auto;
 	text-align: right;
+    min-width: 35px; /* Prevent jumping */
 }
 
 .text-show {
