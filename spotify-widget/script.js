@@ -157,7 +157,7 @@ function UpdatePlayer(data) {
 	}
 
 	// Set thumbnail
-	// UpdateAlbumArt(document.getElementById("albumArt"), albumArt);
+	UpdateAlbumArt(document.getElementById("albumArt"), albumArt);
 	UpdateAlbumArt(document.getElementById("backgroundImage"), albumArt);
 
 	// Set song info
