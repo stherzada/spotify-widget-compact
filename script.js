@@ -92,6 +92,9 @@ async function FetchAccessToken(code) {
         if (hide_album_art) {
             browserSourceURL += `&hideAlbumArt=true`;
         }
+        
+        // Hide config box to avoid confusion, or keep it and update link dynamically?
+        // Let's keep it but ensure link updates
         document.getElementById("authorizationBox").style.display = 'inline';
     }
     else
@@ -117,11 +120,42 @@ function checkInputs() {
     } else {
         authorizeButton.disabled = false;   // Enable the button
     }
+    UpdateLink();
+}
+
+function UpdateLink() {
+    if (refresh_token === "") return; // Don't update if we don't have a token yet
+
+    const client_id = document.getElementById("client_id_box").value;
+    const client_secret = document.getElementById("client_secret_box").value;
+    const twitch_channel = document.getElementById("twitch_channel_box").value;
+    const duration = document.getElementById("duration_box").value;
+    const hide_album_art = document.getElementById("hide_album_art_box").checked;
+
+    // Update localStorage so next time it's remembered
+    localStorage.setItem("twitch_channel", twitch_channel);
+    localStorage.setItem("duration", duration);
+    localStorage.setItem("hide_album_art", hide_album_art);
+
+    browserSourceURL = `${baseURL}spotify-widget/?client_id=${client_id}&client_secret=${client_secret}&refresh_token=${refresh_token}`;
+    
+    if (twitch_channel) {
+        browserSourceURL += `&twitch_channel=${twitch_channel}`;
+    }
+    if (duration > 0) {
+        browserSourceURL += `&duration=${duration}`;
+    }
+    if (hide_album_art) {
+        browserSourceURL += `&hideAlbumArt=true`;
+    }
 }
 
 // Listen for changes in the input boxes
 clientIdBox.addEventListener('input', checkInputs);
 clientSecretBox.addEventListener('input', checkInputs);
+document.getElementById('twitch_channel_box').addEventListener('input', UpdateLink);
+document.getElementById('duration_box').addEventListener('input', UpdateLink);
+document.getElementById('hide_album_art_box').addEventListener('change', UpdateLink);
 
 // Initial check when the page loads, just in case
 checkInputs();
