@@ -95,8 +95,6 @@ async function GetCurrentlyPlaying(refreshInterval) {
 	catch (error)
 	{
 		console.debug(error);
-		// SetVisibility(false);
-		
 		// Try again in 2 seconds
 		setTimeout(() => {
 			GetCurrentlyPlaying()
@@ -173,12 +171,8 @@ function UpdatePlayer(data) {
 	document.getElementById("progressBar").style.width = `${progressPerc}%`;
 	document.getElementById("progressTime").innerHTML = progressTime;
 	document.getElementById("timeRemaining").innerHTML = `-${timeRemaining}`;
-    // document.getElementById("albumArt").style.clipPath = `inset(0 ${100 - progressPerc}% 0 0)`;
-	// document.getElementById("albumArtBack").style.clipPath = `inset(0 ${100 - progressPerc}% 0 0)`;
-	// document.getElementById("backgroundImage").style.clipPath = `inset(0 ${100 - progressPerc}% 0 0)`;
 
 	setTimeout(() => {
-		// document.getElementById("albumArtBack").src = albumArt;
 		document.getElementById("backgroundImageBack").src = albumArt;
 	}, 1000);
 }
@@ -261,7 +255,6 @@ function resize() {
 
 if (hideAlbumArt) {
 	document.getElementById("albumArtBox").style.display = "none";
-	// document.getElementById("songInfoBox").style.width = "calc(100% - 20px)";
 }
 
 

@@ -64,7 +64,6 @@ body {
 #songInfoBox {
 	position: relative;
 	color: white;
-	/* width: calc(100% - 125px); */
 	width: calc(100%);
 	display: flex;
 	flex-direction: column;
@@ -153,38 +152,37 @@ body {
 	font-weight: 700;
 	line-height: normal;
 	display: flex;
-	align-items: center; /* Center vertically */
+	align-items: center; 
 	justify-content: space-between;
 	margin-top: 8px;
 }
 
 #progressBg {
-	margin: 0 10px; /* Spacing between times */
-	flex-grow: 1; /* Take up available space */
+	margin: 0 10px; 
+	flex-grow: 1;
 	height: 4px;
 	border-radius: 2px;
-	background-color: rgba(255, 255, 255, 0.3); /* Dim background for bar */
+	background-color: rgba(255, 255, 255, 0.3); 
 }
-
 #progressBar {
 	border-radius: 2px;
 	height: 100%;
-	width: 0%; /* Will be set by JS */
+	width: 0%; 
 	background-color: #ffffff;
-	margin: 0;
-	transition: width 1s linear; /* Smooth transition */
+		margin: 0;
+		transition: width 1s linear; 
 }
 
 #progressTime {
 	position: relative;
-    min-width: 35px; /* Prevent jumping */
+    min-width: 35px; 
 }
 
 #timeRemaining {
 	position: relative;
 	width: auto;
 	text-align: right;
-    min-width: 35px; /* Prevent jumping */
+    min-width: 35px; 
 }
 
 .text-show {
