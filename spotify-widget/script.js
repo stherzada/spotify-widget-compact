@@ -12,7 +12,7 @@ let refresh_token = urlParams.get("refresh_token") || "";
 let access_token = "";
 
 const visibilityDuration = urlParams.get("duration") || 0;
-// const hideAlbumArt = urlParams.has("hideAlbumArt");
+const hideAlbumArt = urlParams.has("hideAlbumArt");
 
 let currentState = false;
 let currentSongUri = "";
@@ -259,10 +259,10 @@ function resize() {
 //   HIDE THE ALBUM ART, BECAUSE THAT'S WHAT IT'S SUPPOSED TO DO   //
 /////////////////////////////////////////////////////////////////////
 
-// if (hideAlbumArt) {
-// 	document.getElementById("albumArtBox").style.display = "none";
-// 	// document.getElementById("songInfoBox").style.width = "calc(100% - 20px)";
-// }
+if (hideAlbumArt) {
+	document.getElementById("albumArtBox").style.display = "none";
+	// document.getElementById("songInfoBox").style.width = "calc(100% - 20px)";
+}
 
 
 

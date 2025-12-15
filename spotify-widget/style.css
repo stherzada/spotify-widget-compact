@@ -42,9 +42,10 @@ body {
 	position: relative;
 	border-radius: var(--corner-radius);
 	overflow: hidden;
-	margin: 0px 8px 0px 0px;
+	margin: 0px 10px 0px 0px; /* Increased right margin slightly */
 	object-fit: cover;
 	width: var(--album-art-size);
+	flex-shrink: 0; /* Prevent album art from shrinking */
 }
 
 #albumArt {
@@ -167,16 +168,19 @@ body {
 	height: 16px;
 	font-size: 16px;
 	font-weight: 700;
-	line-height: 2.2;
+	line-height: normal; /* Fixed line-height issue */
+	display: flex; /* Use flexbox for better alignment */
+	justify-content: space-between; /* Space out time and remaining */
+	margin-top: 5px; /* Add some spacing */
 }
 
 #progressTime {
-	position: absolute;
+	position: relative; /* Changed from absolute to relative */
 }
 
 #timeRemaining {
-	position: absolute;
-	width: 100%;
+	position: relative; /* Changed from absolute to relative */
+	width: auto; /* Allow auto width */
 	text-align: right;
 }
 

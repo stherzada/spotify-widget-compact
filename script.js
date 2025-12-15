@@ -23,9 +23,13 @@ function RequestAuthorization() {
     const client_id = document.getElementById("client_id_box").value;
     const client_secret = document.getElementById("client_secret_box").value;
     const twitch_channel = document.getElementById("twitch_channel_box").value;
+    const duration = document.getElementById("duration_box").value;
+    const hide_album_art = document.getElementById("hide_album_art_box").checked;
     localStorage.setItem("client_id", client_id);
     localStorage.setItem("client_secret", client_secret);
     localStorage.setItem("twitch_channel", twitch_channel);
+    localStorage.setItem("duration", duration);
+    localStorage.setItem("hide_album_art", hide_album_art);
 
     let url = "https://accounts.spotify.com/authorize";
     url += "?client_id=" + client_id;
@@ -48,6 +52,8 @@ async function FetchAccessToken(code) {
     const client_id = localStorage.getItem("client_id");
     const client_secret = localStorage.getItem("client_secret");
     const twitch_channel = localStorage.getItem("twitch_channel");
+    const duration = localStorage.getItem("duration") || 0;
+    const hide_album_art = localStorage.getItem("hide_album_art") === "true";
     console.debug(`Client ID: ${client_id}`);
     console.debug(`Client Secret: ${client_secret}`);
 
@@ -79,6 +85,12 @@ async function FetchAccessToken(code) {
         browserSourceURL = `${baseURL}spotify-widget/?client_id=${client_id}&client_secret=${client_secret}&refresh_token=${refresh_token}`;
         if (twitch_channel) {
             browserSourceURL += `&twitch_channel=${twitch_channel}`;
+        }
+        if (duration > 0) {
+            browserSourceURL += `&duration=${duration}`;
+        }
+        if (hide_album_art) {
+            browserSourceURL += `&hideAlbumArt=true`;
         }
         document.getElementById("authorizationBox").style.display = 'inline';
     }
