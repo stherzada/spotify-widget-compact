@@ -7,6 +7,7 @@ const urlParams = new URLSearchParams(queryString);
 
 const client_id = urlParams.get("client_id") || "";
 const client_secret = urlParams.get("client_secret") || "";
+const twitch_channel = urlParams.get("twitch_channel") || "";
 let refresh_token = urlParams.get("refresh_token") || "";
 let access_token = "";
 
@@ -114,10 +115,8 @@ function UpdatePlayer(data) {
 	const duration = `${data.item.duration_ms/1000}`;			// The duration of the song in seconds
 	const progress = `${data.progress_ms/1000}`;				// The current position in seconds
 
-	// Set the visibility of the player, but only if the state is different than the last time we checked
 	if (isPlaying != currentState) {
 
-		// Set player visibility
 		if (!isPlaying)
 		{
 			console.debug("Hiding player...");
@@ -273,3 +272,25 @@ function resize() {
 
 RefreshAccessToken();
 GetCurrentlyPlaying();			// This is a recursive function, so just run it once
+
+if (twitch_channel) {
+	const client = new tmi.Client({
+		channels: [twitch_channel]
+	});
+
+	client.connect();
+
+	client.on('message', (channel, tags, message, self) => {
+		if (message.toLowerCase() === '!music') {
+			console.log("Showing player via !music command");
+			clearTimeout(hideTimeout);
+			SetVisibility(true);
+			
+			if (visibilityDuration > 0) {
+				hideTimeout = setTimeout(() => {
+					SetVisibility(false, false);
+				}, visibilityDuration * 1000);
+			}
+		}
+	});
+}

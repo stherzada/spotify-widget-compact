@@ -22,8 +22,10 @@ let browserSourceURL = "";
 function RequestAuthorization() {
     const client_id = document.getElementById("client_id_box").value;
     const client_secret = document.getElementById("client_secret_box").value;
+    const twitch_channel = document.getElementById("twitch_channel_box").value;
     localStorage.setItem("client_id", client_id);
     localStorage.setItem("client_secret", client_secret);
+    localStorage.setItem("twitch_channel", twitch_channel);
 
     let url = "https://accounts.spotify.com/authorize";
     url += "?client_id=" + client_id;
@@ -45,6 +47,7 @@ else {
 async function FetchAccessToken(code) {
     const client_id = localStorage.getItem("client_id");
     const client_secret = localStorage.getItem("client_secret");
+    const twitch_channel = localStorage.getItem("twitch_channel");
     console.debug(`Client ID: ${client_id}`);
     console.debug(`Client Secret: ${client_secret}`);
 
@@ -74,6 +77,9 @@ async function FetchAccessToken(code) {
         access_token = responseData.access_token;			// Save access token for all future API calls
 
         browserSourceURL = `${baseURL}spotify-widget/?client_id=${client_id}&client_secret=${client_secret}&refresh_token=${refresh_token}`;
+        if (twitch_channel) {
+            browserSourceURL += `&twitch_channel=${twitch_channel}`;
+        }
         document.getElementById("authorizationBox").style.display = 'inline';
     }
     else
