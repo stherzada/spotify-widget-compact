@@ -13,6 +13,7 @@ let access_token = "";
 
 const visibilityDuration = urlParams.get("duration") || 0;
 const hideAlbumArt = urlParams.has("hideAlbumArt");
+const glassEffect = urlParams.has("glassEffect") || urlParams.get("glassEffect") === "true";
 
 let currentState = false;
 let currentSongUri = "";
@@ -255,6 +256,10 @@ function resize() {
 
 if (hideAlbumArt) {
 	document.getElementById("albumArtBox").style.display = "none";
+}
+
+if (glassEffect) {
+	document.getElementById("mainContainer").classList.add("glass-effect");
 }
 
 

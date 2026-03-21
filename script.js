@@ -25,11 +25,13 @@ function RequestAuthorization() {
     const twitch_channel = document.getElementById("twitch_channel_box").value;
     const duration = document.getElementById("duration_box").value;
     const hide_album_art = document.getElementById("hide_album_art_box").checked;
+    const glass_effect = document.getElementById("glass_effect_box").checked;
     localStorage.setItem("client_id", client_id);
     localStorage.setItem("client_secret", client_secret);
     localStorage.setItem("twitch_channel", twitch_channel);
     localStorage.setItem("duration", duration);
     localStorage.setItem("hide_album_art", hide_album_art);
+    localStorage.setItem("glass_effect", glass_effect);
 
     let url = "https://accounts.spotify.com/authorize";
     url += "?client_id=" + client_id;
@@ -54,6 +56,7 @@ async function FetchAccessToken(code) {
     const twitch_channel = localStorage.getItem("twitch_channel");
     const duration = localStorage.getItem("duration") || 0;
     const hide_album_art = localStorage.getItem("hide_album_art") === "true";
+    const glass_effect = localStorage.getItem("glass_effect") === "true";
     console.debug(`Client ID: ${client_id}`);
     console.debug(`Client Secret: ${client_secret}`);
 
@@ -91,6 +94,9 @@ async function FetchAccessToken(code) {
         }
         if (hide_album_art) {
             browserSourceURL += `&hideAlbumArt=true`;
+        }
+        if (glass_effect) {
+            browserSourceURL += `&glassEffect=true`;
         }
         
         // Hide config box to avoid confusion, or keep it and update link dynamically?
@@ -131,11 +137,13 @@ function UpdateLink() {
     const twitch_channel = document.getElementById("twitch_channel_box").value;
     const duration = document.getElementById("duration_box").value;
     const hide_album_art = document.getElementById("hide_album_art_box").checked;
+    const glass_effect = document.getElementById("glass_effect_box").checked;
 
     // Update localStorage so next time it's remembered
     localStorage.setItem("twitch_channel", twitch_channel);
     localStorage.setItem("duration", duration);
     localStorage.setItem("hide_album_art", hide_album_art);
+    localStorage.setItem("glass_effect", glass_effect);
 
     browserSourceURL = `${baseURL}spotify-widget/?client_id=${client_id}&client_secret=${client_secret}&refresh_token=${refresh_token}`;
     
@@ -148,6 +156,9 @@ function UpdateLink() {
     if (hide_album_art) {
         browserSourceURL += `&hideAlbumArt=true`;
     }
+    if (glass_effect) {
+        browserSourceURL += `&glassEffect=true`;
+    }
 }
 
 // Listen for changes in the input boxes
@@ -156,6 +167,7 @@ clientSecretBox.addEventListener('input', checkInputs);
 document.getElementById('twitch_channel_box').addEventListener('input', UpdateLink);
 document.getElementById('duration_box').addEventListener('input', UpdateLink);
 document.getElementById('hide_album_art_box').addEventListener('change', UpdateLink);
+document.getElementById('glass_effect_box').addEventListener('change', UpdateLink);
 
 // Initial check when the page loads, just in case
 checkInputs();
