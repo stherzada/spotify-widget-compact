@@ -1,0 +1,188 @@
+.root {
+  --corner-radius: 25px;
+  --album-art-size: 94px;
+  font-family: var(--font-sans);
+}
+
+.container {
+  display: flex;
+  position: fixed;
+  height: var(--album-art-size);
+  margin: 20px;
+  filter: drop-shadow(15px 15px 7px rgba(0, 0, 0, 1));
+  width: 100%;
+  max-width: 400px;
+  bottom: calc(50% - 20px);
+  left: 50%;
+  opacity: 0;
+  transition: all 0.5s ease;
+}
+
+.containerVisible {
+  opacity: 1;
+  bottom: 50%;
+}
+
+.albumArtBox {
+  background: rgba(0, 0, 0, 0.5);
+  position: relative;
+  border-radius: var(--corner-radius);
+  overflow: hidden;
+  margin: 0 8px 0 0;
+  width: var(--album-art-size);
+  flex-shrink: 0;
+}
+
+.albumArt {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  object-fit: cover;
+  transition: opacity 0.25s ease;
+}
+
+.albumArtFading {
+  opacity: 0;
+}
+
+.songInfoBox {
+  position: relative;
+  color: white;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 0 1 auto;
+  justify-content: center;
+  z-index: 4;
+  text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.songInfo {
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0.9;
+  position: relative;
+  border-radius: var(--corner-radius);
+  padding: 0 20px;
+  height: 100%;
+  overflow: hidden;
+}
+
+.songDetails {
+  position: absolute;
+  width: calc(100% - 40px);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.backgroundArt {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  border-radius: var(--corner-radius);
+  overflow: hidden;
+  z-index: -1;
+  opacity: 0.9;
+}
+
+.backgroundImage {
+  filter: blur(20px);
+  position: absolute;
+  width: 100%;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  transition: opacity 0.25s ease;
+}
+
+.backgroundImageFading {
+  opacity: 0;
+}
+
+.backgroundImageBack {
+  filter: blur(20px) grayscale(75%);
+  opacity: 0.5;
+  position: absolute;
+  width: 100%;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  z-index: -1;
+}
+
+.artistLabel {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1;
+  white-space: nowrap;
+  transition: opacity 0.25s ease;
+  text-align: center;
+}
+
+.songLabel {
+  font-weight: bold;
+  font-size: 20px;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: opacity 0.25s ease;
+  text-align: center;
+}
+
+.textFading {
+  opacity: 0;
+}
+
+.times {
+  position: relative;
+  height: 16px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: normal;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.progressBg {
+  margin: 0 10px;
+  flex-grow: 1;
+  height: 4px;
+  border-radius: 2px;
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.progressBar {
+  border-radius: 2px;
+  height: 100%;
+  background-color: #ffffff;
+  transition: width 1s linear;
+}
+
+.progressTime {
+  position: relative;
+  min-width: 35px;
+}
+
+.timeRemaining {
+  position: relative;
+  width: auto;
+  text-align: right;
+  min-width: 35px;
+}
+
+.glassEffect .songInfo {
+  background: rgba(30, 30, 30, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  opacity: 1;
+}
+
+.glassEffect .backgroundArt {
+  display: none;
+}
