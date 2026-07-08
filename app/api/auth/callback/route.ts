@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { exchangeCodeForTokens } from "@/lib/spotify";
+import { appOrigin, exchangeCodeForTokens } from "@/lib/spotify";
 import { generateSid, saveSession } from "@/lib/kv";
 import { STATE_COOKIE } from "../login/route";
 
@@ -10,7 +10,8 @@ import { STATE_COOKIE } from "../login/route";
  * with only that `sid` — never the token itself — in the URL.
  */
 export async function GET(request: NextRequest) {
-  const { searchParams, origin } = request.nextUrl;
+  const { searchParams } = request.nextUrl;
+  const origin = appOrigin();
   const code = searchParams.get("code");
   const state = searchParams.get("state");
   const error = searchParams.get("error");

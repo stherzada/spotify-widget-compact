@@ -35,6 +35,10 @@ function basicAuthHeader(): string {
   return `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`;
 }
 
+export function appOrigin(): string {
+  return new URL(requireEnv("SPOTIFY_REDIRECT_URI")).origin;
+}
+
 export function buildAuthorizeUrl(state: string): string {
   const url = new URL(AUTHORIZE_URL);
   url.searchParams.set("client_id", requireEnv("SPOTIFY_CLIENT_ID"));
