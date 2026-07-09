@@ -3,9 +3,17 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { NowPlaying } from "@/lib/types";
 
-const POLL_INTERVAL_MS = 5000;
+const POLL_INTERVAL_MS = 2000;
+const TRACK_END_SETTLE_MS = 1000;
 const MAX_BACKOFF_MS = 30000;
 const REVEAL_DELAY_MS = 500;
+
+function nextPollDelay(data: NowPlaying): number {
+  if (!data.isPlaying) return POLL_INTERVAL_MS;
+  const remaining = data.durationMs - data.progressMs;
+  if (remaining <= 0) return POLL_INTERVAL_MS;
+  return Math.min(POLL_INTERVAL_MS, remaining + TRACK_END_SETTLE_MS);
+}
 
 interface UseNowPlayingResult {
   nowPlaying: NowPlaying | null;
@@ -74,7 +82,7 @@ export function useNowPlaying(
         lastIsPlayingRef.current = data.isPlaying;
         if (data.songUri) lastSongUriRef.current = data.songUri;
 
-        schedule(POLL_INTERVAL_MS);
+        schedule(nextPollDelay(data));
       } catch {
         backoffMs = Math.min(backoffMs * 2, MAX_BACKOFF_MS);
         schedule(backoffMs);
