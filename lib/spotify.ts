@@ -143,7 +143,7 @@ export function normalizeNowPlaying(
     isPlaying: data?.is_playing ?? false,
     songUri: track.uri,
     albumArt: track.album.images[0]?.url ?? PLACEHOLDER_ALBUM_ART,
-    artist: track.artists[0]?.name ?? "",
+    artist: track.artists.map((a) => a.name).join(", "),
     name: track.name,
     durationMs: track.duration_ms,
     progressMs: data?.progress_ms ?? 0,

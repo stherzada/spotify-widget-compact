@@ -147,6 +147,33 @@
   margin: 20px 0;
 }
 
+.colorFieldRow {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.colorField {
+  flex: 1;
+  font-weight: 500;
+}
+
+.colorInput {
+  display: block;
+  width: 100%;
+  height: 38px;
+  padding: 2px;
+  border-radius: var(--corner-radius);
+  background-color: #ffffff05;
+  border: 1px solid #ffffff1a;
+  cursor: pointer;
+}
+
+.select {
+  composes: input;
+  cursor: pointer;
+}
+
 .linkRow {
   text-align: center;
   margin-top: 16px;

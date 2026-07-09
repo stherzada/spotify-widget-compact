@@ -1,5 +1,6 @@
 import Link from "next/link";
 import NowPlaying from "@/components/NowPlaying";
+import { sanitizeHexColor, sanitizeWidgetPosition } from "@/lib/format";
 
 interface WidgetPageProps {
   searchParams: Promise<{
@@ -8,6 +9,9 @@ interface WidgetPageProps {
     duration?: string;
     hideAlbumArt?: string;
     glassEffect?: string;
+    accent?: string;
+    text?: string;
+    position?: string;
   }>;
 }
 
@@ -31,6 +35,9 @@ export default async function WidgetPage({ searchParams }: WidgetPageProps) {
       visibilityDurationSeconds={Number(params.duration) > 0 ? Number(params.duration) : 0}
       hideAlbumArt={params.hideAlbumArt === "1" || params.hideAlbumArt === "true"}
       glassEffect={params.glassEffect === "1" || params.glassEffect === "true"}
+      accentColor={sanitizeHexColor(params.accent, "#ffffff")}
+      textColor={sanitizeHexColor(params.text, "#ffffff")}
+      position={sanitizeWidgetPosition(params.position)}
     />
   );
 }

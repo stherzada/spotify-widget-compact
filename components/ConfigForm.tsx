@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import WidgetPreview from "@/components/WidgetPreview";
+import type { WidgetPosition } from "@/lib/types";
 import styles from "@/app/page.module.css";
 
 const SID_STORAGE_KEY = "spotify_widget_sid";
@@ -12,6 +14,9 @@ interface Prefs {
   visibilityDurationSeconds: number;
   hideAlbumArt: boolean;
   glassEffect: boolean;
+  accentColor: string;
+  textColor: string;
+  position: WidgetPosition;
 }
 
 const DEFAULT_PREFS: Prefs = {
@@ -19,7 +24,20 @@ const DEFAULT_PREFS: Prefs = {
   visibilityDurationSeconds: 0,
   hideAlbumArt: false,
   glassEffect: false,
+  accentColor: "#ffffff",
+  textColor: "#ffffff",
+  position: "center",
 };
+
+const POSITION_OPTIONS: { value: WidgetPosition; label: string }[] = [
+  { value: "center", label: "Center" },
+  { value: "top", label: "Top Center" },
+  { value: "bottom", label: "Bottom Center" },
+  { value: "top-left", label: "Top Left" },
+  { value: "top-right", label: "Top Right" },
+  { value: "bottom-left", label: "Bottom Left" },
+  { value: "bottom-right", label: "Bottom Right" },
+];
 
 const ERROR_MESSAGES: Record<string, string> = {
   access_denied: "You cancelled the Spotify authorization.",
@@ -42,6 +60,15 @@ function buildWidgetUrl(origin: string, sid: string, prefs: Prefs): string {
   }
   if (prefs.glassEffect) {
     url.searchParams.set("glassEffect", "1");
+  }
+  if (prefs.accentColor !== DEFAULT_PREFS.accentColor) {
+    url.searchParams.set("accent", prefs.accentColor);
+  }
+  if (prefs.textColor !== DEFAULT_PREFS.textColor) {
+    url.searchParams.set("text", prefs.textColor);
+  }
+  if (prefs.position !== DEFAULT_PREFS.position) {
+    url.searchParams.set("position", prefs.position);
   }
   return url.toString();
 }
@@ -185,7 +212,53 @@ export default function ConfigForm() {
             Glass Effect
           </label>
 
+          <div className={styles.colorFieldRow}>
+            <label className={styles.colorField}>
+              <span className={styles.fieldLabel}>Accent Color</span>
+              <input
+                className={styles.colorInput}
+                type="color"
+                value={prefs.accentColor}
+                onChange={(e) => setPrefs((p) => ({ ...p, accentColor: e.target.value }))}
+              />
+            </label>
+            <label className={styles.colorField}>
+              <span className={styles.fieldLabel}>Text Color</span>
+              <input
+                className={styles.colorInput}
+                type="color"
+                value={prefs.textColor}
+                onChange={(e) => setPrefs((p) => ({ ...p, textColor: e.target.value }))}
+              />
+            </label>
+          </div>
+
+          <label className={styles.field}>
+            <span className={styles.fieldLabel}>Position</span>
+            <select
+              className={styles.select}
+              value={prefs.position}
+              onChange={(e) =>
+                setPrefs((p) => ({ ...p, position: e.target.value as WidgetPosition }))
+              }
+            >
+              {POSITION_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+
           <div className={styles.divider} />
+
+          <WidgetPreview
+            hideAlbumArt={prefs.hideAlbumArt}
+            glassEffect={prefs.glassEffect}
+            accentColor={prefs.accentColor}
+            textColor={prefs.textColor}
+            position={prefs.position}
+          />
 
           <p className={styles.fieldLabel}>Your OBS Browser Source URL:</p>
           <div className={styles.urlBox}>{widgetUrl}</div>

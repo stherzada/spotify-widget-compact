@@ -1,11 +1,14 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, type CSSProperties } from "react";
 import { useNowPlaying } from "@/hooks/useNowPlaying";
 import { useTwitchCommand } from "@/hooks/useTwitchCommand";
 import { useCrossfade, useDelayedValue } from "@/hooks/useCrossfade";
 import { useAutoScale } from "@/hooks/useAutoScale";
+import { useTrackProgress } from "@/hooks/useTrackProgress";
+import { useMarquee } from "@/hooks/useMarquee";
 import { formatTime } from "@/lib/format";
+import type { WidgetPosition } from "@/lib/types";
 import styles from "@/app/widget/widget.module.css";
 
 const PLACEHOLDER_ALBUM_ART = "/placeholder-album-art.png";
@@ -17,6 +20,9 @@ export interface NowPlayingProps {
   visibilityDurationSeconds: number;
   hideAlbumArt: boolean;
   glassEffect: boolean;
+  accentColor?: string;
+  textColor?: string;
+  position?: WidgetPosition;
 }
 
 export default function NowPlaying({
@@ -25,13 +31,16 @@ export default function NowPlaying({
   visibilityDurationSeconds,
   hideAlbumArt,
   glassEffect,
+  accentColor = "#ffffff",
+  textColor = "#ffffff",
+  position = "center",
 }: NowPlayingProps) {
   const { nowPlaying, visible, reveal } = useNowPlaying(sid, visibilityDurationSeconds);
   const onTwitchCommand = useCallback(() => reveal(), [reveal]);
   useTwitchCommand(twitchChannel, onTwitchCommand);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  useAutoScale(containerRef);
+  useAutoScale(containerRef, position);
 
   const albumArt = nowPlaying?.albumArt ?? PLACEHOLDER_ALBUM_ART;
   const { displayValue: albumArtSrc, fading: albumArtFading } = useCrossfade(albumArt);
@@ -40,8 +49,16 @@ export default function NowPlaying({
   const { displayValue: songName, fading: songFading } = useCrossfade(nowPlaying?.name ?? "");
   const { displayValue: artist, fading: artistFading } = useCrossfade(nowPlaying?.artist ?? "");
 
+  const songLabelRef = useRef<HTMLDivElement>(null);
+  const songTextRef = useRef<HTMLSpanElement>(null);
+  const songMarqueeDistance = useMarquee(songLabelRef, songTextRef, songName);
+
+  const artistLabelRef = useRef<HTMLDivElement>(null);
+  const artistTextRef = useRef<HTMLSpanElement>(null);
+  const artistMarqueeDistance = useMarquee(artistLabelRef, artistTextRef, artist);
+
   const durationMs = nowPlaying?.durationMs ?? 0;
-  const progressMs = nowPlaying?.progressMs ?? 0;
+  const progressMs = useTrackProgress(nowPlaying);
   const progressPercent = durationMs > 0 ? (progressMs / durationMs) * 100 : 0;
   const progressTime = formatTime(progressMs / 1000);
   const timeRemaining = formatTime((durationMs - progressMs) / 1000);
@@ -54,9 +71,14 @@ export default function NowPlaying({
     .filter(Boolean)
     .join(" ");
 
+  const rootStyle = {
+    "--accent-color": accentColor,
+    "--text-color": textColor,
+  } as CSSProperties;
+
   return (
-    <div className={styles.root}>
-      <div ref={containerRef} className={containerClassName}>
+    <div className={styles.root} style={rootStyle}>
+      <div ref={containerRef} className={containerClassName} data-position={position}>
         {!hideAlbumArt && (
           <div className={styles.albumArtBox}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -71,11 +93,41 @@ export default function NowPlaying({
         <div className={styles.songInfoBox}>
           <div className={styles.songInfo}>
             <div className={styles.songDetails}>
-              <div className={`${styles.songLabel} ${songFading ? styles.textFading : ""}`}>
-                {songName}
+              <div
+                ref={songLabelRef}
+                className={`${styles.songLabel} ${songFading ? styles.textFading : ""} ${
+                  songMarqueeDistance ? styles.marqueeActive : ""
+                }`}
+              >
+                <span
+                  ref={songTextRef}
+                  className={songMarqueeDistance ? styles.marqueeText : undefined}
+                  style={
+                    songMarqueeDistance
+                      ? ({ "--marquee-distance": `${songMarqueeDistance}px` } as CSSProperties)
+                      : undefined
+                  }
+                >
+                  {songName}
+                </span>
               </div>
-              <div className={`${styles.artistLabel} ${artistFading ? styles.textFading : ""}`}>
-                {artist}
+              <div
+                ref={artistLabelRef}
+                className={`${styles.artistLabel} ${artistFading ? styles.textFading : ""} ${
+                  artistMarqueeDistance ? styles.marqueeActive : ""
+                }`}
+              >
+                <span
+                  ref={artistTextRef}
+                  className={artistMarqueeDistance ? styles.marqueeText : undefined}
+                  style={
+                    artistMarqueeDistance
+                      ? ({ "--marquee-distance": `${artistMarqueeDistance}px` } as CSSProperties)
+                      : undefined
+                  }
+                >
+                  {artist}
+                </span>
               </div>
               <div className={styles.times}>
                 <div className={styles.progressTime}>{progressTime}</div>

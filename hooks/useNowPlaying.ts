@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { NowPlaying } from "@/lib/types";
 
-const POLL_INTERVAL_MS = 1000;
+const POLL_INTERVAL_MS = 5000;
+const MAX_BACKOFF_MS = 30000;
 const REVEAL_DELAY_MS = 500;
 
 interface UseNowPlayingResult {
@@ -16,6 +17,10 @@ interface UseNowPlayingResult {
  * Polls `/api/now-playing` for a given widget session and derives the
  * show/hide behavior: reveal on play or track change, hide on pause, and
  * auto-hide again after `visibilityDurationSeconds` if set.
+ *
+ * Polling backs off exponentially on error (e.g. rate limits) and pauses
+ * entirely while the document is hidden, resuming with an immediate poll
+ * once it's visible again.
  */
 export function useNowPlaying(
   sid: string,
@@ -41,16 +46,29 @@ export function useNowPlaying(
 
   useEffect(() => {
     let cancelled = false;
+    let inFlight = false;
+    let pollTimeout: ReturnType<typeof setTimeout> | null = null;
     let revealTimeout: ReturnType<typeof setTimeout> | null = null;
+    let backoffMs = POLL_INTERVAL_MS;
+
+    function schedule(delay: number) {
+      if (cancelled || document.hidden) return;
+      pollTimeout = setTimeout(poll, delay);
+    }
 
     async function poll() {
+      pollTimeout = null;
+      inFlight = true;
       try {
         const response = await fetch(`/api/now-playing?sid=${encodeURIComponent(sid)}`);
-        if (!response.ok || cancelled) return;
+        if (!response.ok) throw new Error(`now-playing fetch failed: ${response.status}`);
+        if (cancelled) return;
 
         const data: NowPlaying = await response.json();
         if (cancelled) return;
+
         setNowPlaying(data);
+        backoffMs = POLL_INTERVAL_MS;
 
         const playStateChanged = data.isPlaying !== lastIsPlayingRef.current;
         const trackChanged = data.songUri !== null && data.songUri !== lastSongUriRef.current;
@@ -65,17 +83,35 @@ export function useNowPlaying(
 
         lastIsPlayingRef.current = data.isPlaying;
         if (data.songUri) lastSongUriRef.current = data.songUri;
+
+        schedule(POLL_INTERVAL_MS);
       } catch {
-        // Network hiccup — just try again on the next tick.
+        // Network hiccup or rate limit — back off before retrying.
+        backoffMs = Math.min(backoffMs * 2, MAX_BACKOFF_MS);
+        schedule(backoffMs);
+      } finally {
+        inFlight = false;
       }
     }
 
+    function handleVisibilityChange() {
+      if (document.hidden) {
+        if (pollTimeout) clearTimeout(pollTimeout);
+        pollTimeout = null;
+        return;
+      }
+      // Coming back into view: resume immediately if nothing is scheduled
+      // or in flight already.
+      if (!pollTimeout && !inFlight) poll();
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
     poll();
-    const interval = setInterval(poll, POLL_INTERVAL_MS);
 
     return () => {
       cancelled = true;
-      clearInterval(interval);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      if (pollTimeout) clearTimeout(pollTimeout);
       if (revealTimeout) clearTimeout(revealTimeout);
       if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current);
     };

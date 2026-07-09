@@ -59,10 +59,24 @@ export interface Session {
   createdAt: number; // epoch ms
 }
 
+// Where the widget anchors itself on screen. "center" is the original
+// default; the rest anchor to an edge/corner with a 20px gap.
+export type WidgetPosition =
+  | "center"
+  | "top"
+  | "bottom"
+  | "top-left"
+  | "top-right"
+  | "bottom-left"
+  | "bottom-right";
+
 // Non-secret display preferences, carried as query params on the widget URL.
 export interface WidgetPrefs {
   twitchChannel: string;
   visibilityDurationSeconds: number;
   hideAlbumArt: boolean;
   glassEffect: boolean;
+  accentColor: string;
+  textColor: string;
+  position: WidgetPosition;
 }
