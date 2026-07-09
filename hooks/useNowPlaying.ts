@@ -12,16 +12,6 @@ interface UseNowPlayingResult {
   visible: boolean;
   reveal: () => void;
 }
-
-/**
- * Polls `/api/now-playing` for a given widget session and derives the
- * show/hide behavior: reveal on play or track change, hide on pause, and
- * auto-hide again after `visibilityDurationSeconds` if set.
- *
- * Polling backs off exponentially on error (e.g. rate limits) and pauses
- * entirely while the document is hidden, resuming with an immediate poll
- * once it's visible again.
- */
 export function useNowPlaying(
   sid: string,
   visibilityDurationSeconds: number
@@ -86,7 +76,6 @@ export function useNowPlaying(
 
         schedule(POLL_INTERVAL_MS);
       } catch {
-        // Network hiccup or rate limit — back off before retrying.
         backoffMs = Math.min(backoffMs * 2, MAX_BACKOFF_MS);
         schedule(backoffMs);
       } finally {
@@ -100,8 +89,6 @@ export function useNowPlaying(
         pollTimeout = null;
         return;
       }
-      // Coming back into view: resume immediately if nothing is scheduled
-      // or in flight already.
       if (!pollTimeout && !inFlight) poll();
     }
 

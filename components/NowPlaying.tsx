@@ -8,7 +8,6 @@ import { useAutoScale } from "@/hooks/useAutoScale";
 import { useTrackProgress } from "@/hooks/useTrackProgress";
 import { useMarquee } from "@/hooks/useMarquee";
 import { formatTime } from "@/lib/format";
-import type { WidgetPosition } from "@/lib/types";
 import styles from "@/app/widget/widget.module.css";
 
 const PLACEHOLDER_ALBUM_ART = "/placeholder-album-art.png";
@@ -22,7 +21,6 @@ export interface NowPlayingProps {
   glassEffect: boolean;
   accentColor?: string;
   textColor?: string;
-  position?: WidgetPosition;
 }
 
 export default function NowPlaying({
@@ -33,14 +31,13 @@ export default function NowPlaying({
   glassEffect,
   accentColor = "#ffffff",
   textColor = "#ffffff",
-  position = "center",
 }: NowPlayingProps) {
   const { nowPlaying, visible, reveal } = useNowPlaying(sid, visibilityDurationSeconds);
   const onTwitchCommand = useCallback(() => reveal(), [reveal]);
   useTwitchCommand(twitchChannel, onTwitchCommand);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  useAutoScale(containerRef, position);
+  useAutoScale(containerRef);
 
   const albumArt = nowPlaying?.albumArt ?? PLACEHOLDER_ALBUM_ART;
   const { displayValue: albumArtSrc, fading: albumArtFading } = useCrossfade(albumArt);
@@ -78,7 +75,7 @@ export default function NowPlaying({
 
   return (
     <div className={styles.root} style={rootStyle}>
-      <div ref={containerRef} className={containerClassName} data-position={position}>
+      <div ref={containerRef} className={containerClassName}>
         {!hideAlbumArt && (
           <div className={styles.albumArtBox}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -95,9 +92,8 @@ export default function NowPlaying({
             <div className={styles.songDetails}>
               <div
                 ref={songLabelRef}
-                className={`${styles.songLabel} ${songFading ? styles.textFading : ""} ${
-                  songMarqueeDistance ? styles.marqueeActive : ""
-                }`}
+                className={`${styles.songLabel} ${songFading ? styles.textFading : ""} ${songMarqueeDistance ? styles.marqueeActive : ""
+                  }`}
               >
                 <span
                   ref={songTextRef}
@@ -113,9 +109,8 @@ export default function NowPlaying({
               </div>
               <div
                 ref={artistLabelRef}
-                className={`${styles.artistLabel} ${artistFading ? styles.textFading : ""} ${
-                  artistMarqueeDistance ? styles.marqueeActive : ""
-                }`}
+                className={`${styles.artistLabel} ${artistFading ? styles.textFading : ""} ${artistMarqueeDistance ? styles.marqueeActive : ""
+                  }`}
               >
                 <span
                   ref={artistTextRef}
@@ -144,9 +139,8 @@ export default function NowPlaying({
             <img
               src={albumArtSrc}
               alt=""
-              className={`${styles.backgroundImage} ${
-                albumArtFading ? styles.backgroundImageFading : ""
-              }`}
+              className={`${styles.backgroundImage} ${albumArtFading ? styles.backgroundImageFading : ""
+                }`}
             />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={backgroundBack} alt="" className={styles.backgroundImageBack} />

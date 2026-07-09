@@ -3,30 +3,15 @@
 import type { CSSProperties } from "react";
 import widgetStyles from "@/app/widget/widget.module.css";
 import previewStyles from "./WidgetPreview.module.css";
-import type { WidgetPosition } from "@/lib/types";
 
 const PLACEHOLDER_ALBUM_ART = "/placeholder-album-art.png";
 
 const SAMPLE_TRACK = {
-  name: "Example Song Title",
-  artist: "Example Artist",
+  name: "Song Title",
+  artist: "Artist Name",
   progressTime: "1:23",
   timeRemaining: "2:05",
   progressPercent: 40,
-};
-
-// The real widget anchors via `position: fixed` + viewport units (see
-// widget.module.css's `[data-position=...]` rules and `useAutoScale`), which
-// would break out of this bounded preview box. Flexbox alignment on the
-// frame approximates the same anchor instead.
-const POSITION_ALIGN: Record<WidgetPosition, CSSProperties> = {
-  center: { alignItems: "center", justifyContent: "center" },
-  top: { alignItems: "flex-start", justifyContent: "center" },
-  bottom: { alignItems: "flex-end", justifyContent: "center" },
-  "top-left": { alignItems: "flex-start", justifyContent: "flex-start" },
-  "top-right": { alignItems: "flex-start", justifyContent: "flex-end" },
-  "bottom-left": { alignItems: "flex-end", justifyContent: "flex-start" },
-  "bottom-right": { alignItems: "flex-end", justifyContent: "flex-end" },
 };
 
 export interface WidgetPreviewProps {
@@ -34,7 +19,6 @@ export interface WidgetPreviewProps {
   glassEffect: boolean;
   accentColor: string;
   textColor: string;
-  position: WidgetPosition;
 }
 
 /**
@@ -48,7 +32,6 @@ export default function WidgetPreview({
   glassEffect,
   accentColor,
   textColor,
-  position,
 }: WidgetPreviewProps) {
   const containerClassName = [
     widgetStyles.container,
@@ -61,16 +44,34 @@ export default function WidgetPreview({
   const rootStyle = {
     "--accent-color": accentColor,
     "--text-color": textColor,
+    // `.root` has no height of its own in the real widget (everything inside
+    // is `position: fixed`, so it doesn't need one there). Here it's the
+    // direct child of the fixed-height preview frame, so it needs an
+    // explicit height for `previewStage`'s `height: 100%` to resolve against
+    // — otherwise that percentage falls back to `auto` and vertical
+    // centering has no space to work with.
+    height: "100%",
   } as CSSProperties;
 
   return (
     <div className={previewStyles.previewFrame}>
       <span className={previewStyles.previewLabel}>Preview</span>
       <div className={widgetStyles.root} style={rootStyle}>
-        <div className={previewStyles.previewStage} style={POSITION_ALIGN[position]}>
-          {/* Overrides the real widget's fixed/viewport-anchored positioning
-              so it lays out normally inside the flex stage above. */}
-          <div className={containerClassName} style={{ position: "static", margin: 0, opacity: 1 }}>
+        <div className={previewStyles.previewStage}>
+          <div
+            className={containerClassName}
+            style={{
+              position: "static",
+              margin: 0,
+              opacity: 1,
+              // The real widget relies on `width: 100%; max-width: 400px`
+              // resolving against the viewport (via `position: fixed`) to
+              // size itself. As a plain flex item here, that combination is
+              // ambiguous across browsers when it's the flex line's only
+              // item, so pin an unambiguous width instead.
+              width: "min(400px, 100%)",
+            }}
+          >
             {!hideAlbumArt && (
               <div className={widgetStyles.albumArtBox}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}

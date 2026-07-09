@@ -1,6 +1,6 @@
 import Link from "next/link";
 import NowPlaying from "@/components/NowPlaying";
-import { sanitizeHexColor, sanitizeWidgetPosition } from "@/lib/format";
+import { sanitizeHexColor } from "@/lib/format";
 
 interface WidgetPageProps {
   searchParams: Promise<{
@@ -11,7 +11,6 @@ interface WidgetPageProps {
     glassEffect?: string;
     accent?: string;
     text?: string;
-    position?: string;
   }>;
 }
 
@@ -37,7 +36,6 @@ export default async function WidgetPage({ searchParams }: WidgetPageProps) {
       glassEffect={params.glassEffect === "1" || params.glassEffect === "true"}
       accentColor={sanitizeHexColor(params.accent, "#ffffff")}
       textColor={sanitizeHexColor(params.text, "#ffffff")}
-      position={sanitizeWidgetPosition(params.position)}
     />
   );
 }

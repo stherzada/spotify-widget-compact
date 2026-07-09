@@ -6,11 +6,6 @@ import type { Session } from "@/lib/types";
 // Refresh a little before actual expiry so we don't race Spotify.
 const EXPIRY_BUFFER_MS = 60 * 1000;
 
-/**
- * Proxies Spotify's "currently playing" endpoint for a given widget session.
- * The browser only ever sends `sid` — the refresh token and access token
- * never leave the server.
- */
 export async function GET(request: NextRequest) {
   const sid = request.nextUrl.searchParams.get("sid");
   if (!sid) {
@@ -46,7 +41,6 @@ async function getValidAccessToken(sid: string, session: Session): Promise<strin
   const updated = await updateSession(sid, {
     accessToken: tokens.access_token,
     accessTokenExpiresAt: Date.now() + tokens.expires_in * 1000,
-    // Spotify occasionally rotates the refresh token; persist it if so.
     refreshToken: tokens.refresh_token ?? session.refreshToken,
   });
 

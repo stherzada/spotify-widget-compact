@@ -3,12 +3,6 @@ import { appOrigin, exchangeCodeForTokens } from "@/lib/spotify";
 import { generateSid, saveSession } from "@/lib/kv";
 import { STATE_COOKIE } from "../login/route";
 
-/**
- * Spotify redirects here after the user approves (or denies) access.
- * On success we exchange the one-time `code` for a refresh token, store it
- * server-side under a fresh `sid`, and send the user back to the config page
- * with only that `sid` — never the token itself — in the URL.
- */
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
   const origin = appOrigin();

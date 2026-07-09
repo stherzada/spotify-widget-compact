@@ -12,73 +12,15 @@
   filter: drop-shadow(15px 15px 7px rgba(0, 0, 0, 1));
   width: 100%;
   max-width: 400px;
+  bottom: calc(50% - 20px);
+  left: 50%;
   opacity: 0;
   transition: all 0.5s ease;
 }
 
 .containerVisible {
   opacity: 1;
-}
-
-/* Each position anchors via CSS below; `useAutoScale` supplies the matching
-   translate so the anchor point (e.g. `left: 50%`) actually centers the box —
-   see hooks/useAutoScale.ts. Hidden state sits 20px closer to its edge and
-   slides into place on reveal. */
-
-.container[data-position="center"] {
-  left: 50%;
-  bottom: calc(50% - 20px);
-}
-.containerVisible[data-position="center"] {
   bottom: 50%;
-}
-
-.container[data-position="top"] {
-  left: 50%;
-  top: 0;
-}
-.containerVisible[data-position="top"] {
-  top: 20px;
-}
-
-.container[data-position="bottom"] {
-  left: 50%;
-  bottom: 0;
-}
-.containerVisible[data-position="bottom"] {
-  bottom: 20px;
-}
-
-.container[data-position="top-left"] {
-  left: 0;
-  top: 0;
-}
-.containerVisible[data-position="top-left"] {
-  top: 20px;
-}
-
-.container[data-position="top-right"] {
-  right: 0;
-  top: 0;
-}
-.containerVisible[data-position="top-right"] {
-  top: 20px;
-}
-
-.container[data-position="bottom-left"] {
-  left: 0;
-  bottom: 0;
-}
-.containerVisible[data-position="bottom-left"] {
-  bottom: 20px;
-}
-
-.container[data-position="bottom-right"] {
-  right: 0;
-  bottom: 0;
-}
-.containerVisible[data-position="bottom-right"] {
-  bottom: 20px;
 }
 
 .albumArtBox {
@@ -192,17 +134,10 @@
   opacity: 0;
 }
 
-/* Applied to the outer label (.songLabel/.artistLabel) whenever its text is
-   overflowing, so the marquee scrolls from the true left edge instead of the
-   default centered text potentially starting mid-word. */
 .marqueeActive {
   text-align: left;
 }
 
-/* Applied to the inner span that wraps the text (see NowPlaying.tsx). The
-   outer label keeps `overflow: hidden`, clipping this as it scrolls.
-   `--marquee-distance` (the overflow amount in px) is set inline per
-   instance by `useMarquee`. */
 .marqueeText {
   display: inline-block;
   animation: marqueeScroll 6s ease-in-out infinite;
@@ -210,14 +145,17 @@
 }
 
 @keyframes marqueeScroll {
+
   0%,
   15% {
     transform: translateX(0);
   }
+
   45%,
   60% {
     transform: translateX(calc(-1 * var(--marquee-distance, 0px)));
   }
+
   90%,
   100% {
     transform: translateX(0);

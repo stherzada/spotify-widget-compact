@@ -1,9 +1,7 @@
-/* Simulates a transparent OBS canvas (checkerboard) so accent/text colors
-   and the glass effect preview realistically against a non-solid backdrop. */
 .previewFrame {
   position: relative;
   overflow: hidden;
-  height: 180px;
+  height: 220px;
   border-radius: 10px;
   margin-bottom: 20px;
   background-color: #1e1e1e;
@@ -23,6 +21,8 @@
 
 .previewStage {
   display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   height: 100%;
 }
