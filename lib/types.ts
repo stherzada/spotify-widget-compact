@@ -67,4 +67,11 @@ export interface WidgetPrefs {
   glassEffect: boolean;
   accentColor: string;
   textColor: string;
+  showLyrics: boolean;
+}
+
+// A single synced lyric line, as served by `/api/lyrics`.
+export interface LyricLine {
+  text: string;
+  startTimeMs: number;
 }

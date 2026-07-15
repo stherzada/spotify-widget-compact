@@ -6,6 +6,7 @@ import { useTwitchCommand } from "@/hooks/useTwitchCommand";
 import { useCrossfade, useDelayedValue } from "@/hooks/useCrossfade";
 import { useAutoScale } from "@/hooks/useAutoScale";
 import { useTrackProgress } from "@/hooks/useTrackProgress";
+import { useLyrics, activeLyricLine } from "@/hooks/useLyrics";
 import { useMarquee } from "@/hooks/useMarquee";
 import { formatTime } from "@/lib/format";
 import styles from "@/app/widget/widget.module.css";
@@ -19,6 +20,7 @@ export interface NowPlayingProps {
   visibilityDurationSeconds: number;
   hideAlbumArt: boolean;
   glassEffect: boolean;
+  showLyrics?: boolean;
   accentColor?: string;
   textColor?: string;
 }
@@ -29,6 +31,7 @@ export default function NowPlaying({
   visibilityDurationSeconds,
   hideAlbumArt,
   glassEffect,
+  showLyrics = false,
   accentColor = "#ffffff",
   textColor = "#ffffff",
 }: NowPlayingProps) {
@@ -59,6 +62,11 @@ export default function NowPlaying({
   const progressPercent = durationMs > 0 ? (progressMs / durationMs) * 100 : 0;
   const progressTime = formatTime(progressMs / 1000);
   const timeRemaining = formatTime((durationMs - progressMs) / 1000);
+
+  const { lines: lyricLines } = useLyrics(nowPlaying, showLyrics);
+  const lyricsMode = showLyrics && lyricLines !== null && lyricLines.length > 0;
+  const currentLyric = lyricsMode ? activeLyricLine(lyricLines, progressMs) : "";
+  const { displayValue: lyricText, fading: lyricFading } = useCrossfade(currentLyric);
 
   const containerClassName = [
     styles.container,
@@ -124,13 +132,19 @@ export default function NowPlaying({
                   {artist}
                 </span>
               </div>
-              <div className={styles.times}>
-                <div className={styles.progressTime}>{progressTime}</div>
-                <div className={styles.progressBg}>
-                  <div className={styles.progressBar} style={{ width: `${progressPercent}%` }} />
+              {lyricsMode ? (
+                <div className={`${styles.lyricLine} ${lyricFading ? styles.textFading : ""}`}>
+                  {lyricText}
                 </div>
-                <div className={styles.timeRemaining}>-{timeRemaining}</div>
-              </div>
+              ) : (
+                <div className={styles.times}>
+                  <div className={styles.progressTime}>{progressTime}</div>
+                  <div className={styles.progressBg}>
+                    <div className={styles.progressBar} style={{ width: `${progressPercent}%` }} />
+                  </div>
+                  <div className={styles.timeRemaining}>-{timeRemaining}</div>
+                </div>
+              )}
             </div>
           </div>
 

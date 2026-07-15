@@ -12,11 +12,13 @@ const SAMPLE_TRACK = {
   progressTime: "1:23",
   timeRemaining: "2:05",
   progressPercent: 40,
+  lyricLine: "Never gonna give you up",
 };
 
 export interface WidgetPreviewProps {
   hideAlbumArt: boolean;
   glassEffect: boolean;
+  showLyrics?: boolean;
   accentColor: string;
   textColor: string;
 }
@@ -30,6 +32,7 @@ export interface WidgetPreviewProps {
 export default function WidgetPreview({
   hideAlbumArt,
   glassEffect,
+  showLyrics = false,
   accentColor,
   textColor,
 }: WidgetPreviewProps) {
@@ -84,16 +87,20 @@ export default function WidgetPreview({
                 <div className={widgetStyles.songDetails}>
                   <div className={widgetStyles.songLabel}>{SAMPLE_TRACK.name}</div>
                   <div className={widgetStyles.artistLabel}>{SAMPLE_TRACK.artist}</div>
-                  <div className={widgetStyles.times}>
-                    <div className={widgetStyles.progressTime}>{SAMPLE_TRACK.progressTime}</div>
-                    <div className={widgetStyles.progressBg}>
-                      <div
-                        className={widgetStyles.progressBar}
-                        style={{ width: `${SAMPLE_TRACK.progressPercent}%` }}
-                      />
+                  {showLyrics ? (
+                    <div className={widgetStyles.lyricLine}>{SAMPLE_TRACK.lyricLine}</div>
+                  ) : (
+                    <div className={widgetStyles.times}>
+                      <div className={widgetStyles.progressTime}>{SAMPLE_TRACK.progressTime}</div>
+                      <div className={widgetStyles.progressBg}>
+                        <div
+                          className={widgetStyles.progressBar}
+                          style={{ width: `${SAMPLE_TRACK.progressPercent}%` }}
+                        />
+                      </div>
+                      <div className={widgetStyles.timeRemaining}>-{SAMPLE_TRACK.timeRemaining}</div>
                     </div>
-                    <div className={widgetStyles.timeRemaining}>-{SAMPLE_TRACK.timeRemaining}</div>
-                  </div>
+                  )}
                 </div>
               </div>
 

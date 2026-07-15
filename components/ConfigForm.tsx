@@ -13,6 +13,7 @@ interface Prefs {
   visibilityDurationSeconds: number;
   hideAlbumArt: boolean;
   glassEffect: boolean;
+  showLyrics: boolean;
   accentColor: string;
   textColor: string;
 }
@@ -22,6 +23,7 @@ const DEFAULT_PREFS: Prefs = {
   visibilityDurationSeconds: 0,
   hideAlbumArt: false,
   glassEffect: false,
+  showLyrics: false,
   accentColor: "#ffffff",
   textColor: "#ffffff",
 };
@@ -47,6 +49,9 @@ function buildWidgetUrl(origin: string, sid: string, prefs: Prefs): string {
   }
   if (prefs.glassEffect) {
     url.searchParams.set("glassEffect", "1");
+  }
+  if (prefs.showLyrics) {
+    url.searchParams.set("lyrics", "1");
   }
   if (prefs.accentColor !== DEFAULT_PREFS.accentColor) {
     url.searchParams.set("accent", prefs.accentColor);
@@ -211,6 +216,23 @@ export default function ConfigForm() {
                     </span>
                   </label>
 
+                  <label className={`${styles.settingCard} ${styles.toggleCard}`}>
+                    <span>Show Lyrics</span>
+                    <span className={styles.toggle}>
+                      <input
+                        type="checkbox"
+                        className={styles.toggleInput}
+                        checked={prefs.showLyrics}
+                        onChange={(e) =>
+                          setPrefs((p) => ({ ...p, showLyrics: e.target.checked }))
+                        }
+                      />
+                      <span className={styles.toggleTrack}>
+                        <span className={styles.toggleThumb} />
+                      </span>
+                    </span>
+                  </label>
+
                   <label className={styles.settingCard}>
                     <span className={styles.fieldLabel}>Accent Color</span>
                     <input
@@ -240,6 +262,7 @@ export default function ConfigForm() {
               <WidgetPreview
                 hideAlbumArt={prefs.hideAlbumArt}
                 glassEffect={prefs.glassEffect}
+                showLyrics={prefs.showLyrics}
                 accentColor={prefs.accentColor}
                 textColor={prefs.textColor}
               />
