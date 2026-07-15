@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { NowPlaying } from "@/lib/types";
 
-const POLL_INTERVAL_MS = 2000;
+const POLL_INTERVAL_MS = 1000;
 const TRACK_END_SETTLE_MS = 1000;
 const MAX_BACKOFF_MS = 30000;
 const REVEAL_DELAY_MS = 500;

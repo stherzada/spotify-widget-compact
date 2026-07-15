@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Client } from "lrclib-api";
-import type { LyricLine } from "@/lib/types";
-
-const client = new Client();
+import { getSyncedLyrics } from "@/lib/lyrics";
 
 // Lyrics for a given track are effectively immutable, so let clients/CDNs
 // cache the response for a day rather than re-fetching on every track replay.
@@ -21,22 +18,12 @@ export async function GET(request: NextRequest) {
   const duration = durationParam ? Number(durationParam) : undefined;
 
   try {
-    const lines = await client.getSynced({
-      track_name: track,
-      artist_name: artist,
-      duration: Number.isFinite(duration) && duration ? duration : undefined,
-    });
-
-    const synced: LyricLine[] = (lines ?? [])
-      // `getSynced` also returns entries without a `startTime` for cases like
-      // `[{ text: "[Instrumental]" }]` — those aren't timed lines, so drop them.
-      .filter((line): line is { text: string; startTime: number } => typeof line.startTime === "number")
-      // The library's `startTime` is in *seconds* (its docstring example is
-      // misleading), so convert to ms to match the widget's `progressMs` clock.
-      .map((line) => ({ text: line.text, startTimeMs: Math.round(line.startTime * 1000) }))
-      .sort((a, b) => a.startTimeMs - b.startTimeMs);
-
-    return NextResponse.json({ lines: synced }, { headers: CACHE_HEADERS });
+    const lines = await getSyncedLyrics(
+      track,
+      artist,
+      Number.isFinite(duration) && duration ? duration : undefined
+    );
+    return NextResponse.json({ lines }, { headers: CACHE_HEADERS });
   } catch (err) {
     console.error("Failed to fetch lyrics:", err);
     // Lyrics are a non-critical enhancement — fail soft so the widget falls

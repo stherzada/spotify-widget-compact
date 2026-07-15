@@ -3,7 +3,6 @@ import { fetchCurrentlyPlaying, normalizeNowPlaying, refreshAccessToken } from "
 import { getSession, updateSession } from "@/lib/kv";
 import type { Session } from "@/lib/types";
 
-// Refresh a little before actual expiry so we don't race Spotify.
 const EXPIRY_BUFFER_MS = 60 * 1000;
 
 export async function GET(request: NextRequest) {
