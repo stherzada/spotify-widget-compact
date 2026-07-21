@@ -1,12 +1,9 @@
 import "server-only";
 import { Client, parseLocalLyrics, type LyricLine as RawLyricLine } from "lrclib-api";
-import { Redis } from "@upstash/redis";
 import type { LyricLine } from "./types";
 
 const client = new Client();
-const redis = Redis.fromEnv();
 
-const LYRICS_PREFIX = "spotify-widget:lyrics:";
 const HIT_TTL_SECONDS = 60 * 60 * 24 * 30; // 30 days
 const MISS_TTL_SECONDS = 60 * 60; // 1 hour
 const MAX_MEMORY_ENTRIES = 500;
@@ -94,25 +91,9 @@ export async function getSyncedLyrics(
   if (pending) return pending;
 
   const promise = (async () => {
-    try {
-      const redisHit = await redis.get<LyricLine[]>(LYRICS_PREFIX + key);
-      if (redisHit) {
-        const ttlSeconds = redisHit.length > 0 ? HIT_TTL_SECONDS : MISS_TTL_SECONDS;
-        writeMemoryCache(key, redisHit, ttlSeconds);
-        return redisHit;
-      }
-    } catch (err) {
-      console.error("Redis lyrics lookup failed:", err);
-    }
-
     const lines = await fetchFromLrclib(track, artist, durationMs);
     const ttlSeconds = lines.length > 0 ? HIT_TTL_SECONDS : MISS_TTL_SECONDS;
 
-    try {
-      await redis.set(LYRICS_PREFIX + key, lines, { ex: ttlSeconds });
-    } catch (err) {
-      console.error("Redis lyrics write failed:", err);
-    }
     writeMemoryCache(key, lines, ttlSeconds);
 
     return lines;
