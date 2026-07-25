@@ -3,16 +3,19 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { NowPlaying } from "@/lib/types";
 
-const POLL_INTERVAL_MS = 1000;
+const STEADY_INTERVAL_MS = 10000;
+const MIN_POLL_MS = 2000;
 const TRACK_END_SETTLE_MS = 1000;
 const MAX_BACKOFF_MS = 30000;
 const REVEAL_DELAY_MS = 500;
 
 function nextPollDelay(data: NowPlaying): number {
-  if (!data.isPlaying) return POLL_INTERVAL_MS;
+  if (!data.isPlaying) return STEADY_INTERVAL_MS;
   const remaining = data.durationMs - data.progressMs;
-  if (remaining <= 0) return POLL_INTERVAL_MS;
-  return Math.min(POLL_INTERVAL_MS, remaining + TRACK_END_SETTLE_MS);
+  if (remaining <= 0) return MIN_POLL_MS;
+  // Poll at the steady cadence, but if the track ends sooner, schedule a poll
+  // right after so a track change at the transition is picked up promptly.
+  return Math.max(MIN_POLL_MS, Math.min(STEADY_INTERVAL_MS, remaining + TRACK_END_SETTLE_MS));
 }
 
 interface UseNowPlayingResult {
@@ -47,7 +50,7 @@ export function useNowPlaying(
     let inFlight = false;
     let pollTimeout: ReturnType<typeof setTimeout> | null = null;
     let revealTimeout: ReturnType<typeof setTimeout> | null = null;
-    let backoffMs = POLL_INTERVAL_MS;
+    let backoffMs = STEADY_INTERVAL_MS;
 
     function schedule(delay: number) {
       if (cancelled || document.hidden) return;
@@ -66,7 +69,7 @@ export function useNowPlaying(
         if (cancelled) return;
 
         setNowPlaying(data);
-        backoffMs = POLL_INTERVAL_MS;
+        backoffMs = STEADY_INTERVAL_MS;
 
         const playStateChanged = data.isPlaying !== lastIsPlayingRef.current;
         const trackChanged = data.songUri !== null && data.songUri !== lastSongUriRef.current;

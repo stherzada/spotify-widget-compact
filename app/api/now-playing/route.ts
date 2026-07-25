@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const session = await getSession(sid);
+    const session = await getSession(sid, { allowCache: true });
     if (!session) {
       return NextResponse.json({ error: "Unknown sid" }, { status: 404 });
     }

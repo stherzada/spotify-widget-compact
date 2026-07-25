@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSyncedLyrics } from "@/lib/lyrics";
 
-// Lyrics for a given track are effectively immutable, so let clients/CDNs
-// cache the response for a day rather than re-fetching on every track replay.
 const CACHE_HEADERS = { "Cache-Control": "public, max-age=86400" };
 
 export async function GET(request: NextRequest) {
@@ -26,8 +24,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ lines }, { headers: CACHE_HEADERS });
   } catch (err) {
     console.error("Failed to fetch lyrics:", err);
-    // Lyrics are a non-critical enhancement — fail soft so the widget falls
-    // back to the normal progress bar instead of erroring out.
     return NextResponse.json({ lines: [] });
   }
 }
