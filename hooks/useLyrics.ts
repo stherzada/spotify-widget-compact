@@ -4,9 +4,6 @@ import { useEffect, useState } from "react";
 import type { LyricLine, NowPlaying } from "@/lib/types";
 
 interface UseLyricsResult {
-  // `null` while loading (or disabled/no track); `[]` once we know there are
-  // no synced lyrics for this track — callers should fall back to the time
-  // bar in the latter case.
   lines: LyricLine[] | null;
 }
 
@@ -19,10 +16,6 @@ export function useLyrics(nowPlaying: NowPlaying | null, enabled: boolean): UseL
   const durationMs = nowPlaying?.durationMs ?? 0;
   const active = enabled && !!songUri && !!name && !!artist;
 
-  // Reset to "loading" synchronously during render when the track changes,
-  // mirroring `useTrackProgress`'s re-sync pattern — this avoids the
-  // setState-in-effect cascade that would come from resetting inside the
-  // fetch effect below.
   const key = active ? songUri : null;
   const [prevKey, setPrevKey] = useState(key);
   if (key !== prevKey) {

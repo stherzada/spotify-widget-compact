@@ -105,7 +105,7 @@ export default function NowPlaying({
               >
                 <span
                   ref={songTextRef}
-                  className={songMarqueeDistance ? styles.marqueeText : undefined}
+                  className={`${styles.marqueeMeasure} ${songMarqueeDistance ? styles.marqueeText : ""}`}
                   style={
                     songMarqueeDistance
                       ? ({ "--marquee-distance": `${songMarqueeDistance}px` } as CSSProperties)
@@ -122,7 +122,7 @@ export default function NowPlaying({
               >
                 <span
                   ref={artistTextRef}
-                  className={artistMarqueeDistance ? styles.marqueeText : undefined}
+                  className={`${styles.marqueeMeasure} ${artistMarqueeDistance ? styles.marqueeText : ""}`}
                   style={
                     artistMarqueeDistance
                       ? ({ "--marquee-distance": `${artistMarqueeDistance}px` } as CSSProperties)

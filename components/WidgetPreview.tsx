@@ -1,14 +1,15 @@
 "use client";
 
-import type { CSSProperties } from "react";
+import { useRef, type CSSProperties } from "react";
+import { useMarquee } from "@/hooks/useMarquee";
 import widgetStyles from "@/app/widget/widget.module.css";
 import previewStyles from "./WidgetPreview.module.css";
 
 const PLACEHOLDER_ALBUM_ART = "/placeholder-album-art.png";
 
 const SAMPLE_TRACK = {
-  name: "Song Title",
-  artist: "Artist Name",
+  name: "A Very Long Song Title That Overflows The Widget Layout",
+  artist: "Artist One, Artist Two, Artist Three & Artist Four",
   progressTime: "1:23",
   timeRemaining: "2:05",
   progressPercent: 40,
@@ -36,6 +37,14 @@ export default function WidgetPreview({
   accentColor,
   textColor,
 }: WidgetPreviewProps) {
+  const songLabelRef = useRef<HTMLDivElement>(null);
+  const songTextRef = useRef<HTMLSpanElement>(null);
+  const songMarqueeDistance = useMarquee(songLabelRef, songTextRef, SAMPLE_TRACK.name);
+
+  const artistLabelRef = useRef<HTMLDivElement>(null);
+  const artistTextRef = useRef<HTMLSpanElement>(null);
+  const artistMarqueeDistance = useMarquee(artistLabelRef, artistTextRef, SAMPLE_TRACK.artist);
+
   const containerClassName = [
     widgetStyles.container,
     widgetStyles.containerVisible,
@@ -67,11 +76,6 @@ export default function WidgetPreview({
               position: "static",
               margin: 0,
               opacity: 1,
-              // The real widget relies on `width: 100%; max-width: 400px`
-              // resolving against the viewport (via `position: fixed`) to
-              // size itself. As a plain flex item here, that combination is
-              // ambiguous across browsers when it's the flex line's only
-              // item, so pin an unambiguous width instead.
               width: "min(400px, 100%)",
             }}
           >
@@ -85,8 +89,40 @@ export default function WidgetPreview({
             <div className={widgetStyles.songInfoBox}>
               <div className={widgetStyles.songInfo}>
                 <div className={widgetStyles.songDetails}>
-                  <div className={widgetStyles.songLabel}>{SAMPLE_TRACK.name}</div>
-                  <div className={widgetStyles.artistLabel}>{SAMPLE_TRACK.artist}</div>
+                  <div
+                    ref={songLabelRef}
+                    className={`${widgetStyles.songLabel} ${songMarqueeDistance ? widgetStyles.marqueeActive : ""
+                      }`}
+                  >
+                    <span
+                      ref={songTextRef}
+                      className={`${widgetStyles.marqueeMeasure} ${songMarqueeDistance ? widgetStyles.marqueeText : ""}`}
+                      style={
+                        songMarqueeDistance
+                          ? ({ "--marquee-distance": `${songMarqueeDistance}px` } as CSSProperties)
+                          : undefined
+                      }
+                    >
+                      {SAMPLE_TRACK.name}
+                    </span>
+                  </div>
+                  <div
+                    ref={artistLabelRef}
+                    className={`${widgetStyles.artistLabel} ${artistMarqueeDistance ? widgetStyles.marqueeActive : ""
+                      }`}
+                  >
+                    <span
+                      ref={artistTextRef}
+                      className={`${widgetStyles.marqueeMeasure} ${artistMarqueeDistance ? widgetStyles.marqueeText : ""}`}
+                      style={
+                        artistMarqueeDistance
+                          ? ({ "--marquee-distance": `${artistMarqueeDistance}px` } as CSSProperties)
+                          : undefined
+                      }
+                    >
+                      {SAMPLE_TRACK.artist}
+                    </span>
+                  </div>
                   {showLyrics ? (
                     <div className={widgetStyles.lyricLine}>{SAMPLE_TRACK.lyricLine}</div>
                   ) : (

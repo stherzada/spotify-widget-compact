@@ -16,8 +16,20 @@ export function useMarquee(
       setDistance(0);
       return;
     }
-    const overflow = textEl.scrollWidth - container.clientWidth;
-    setDistance(overflow > 1 ? overflow : 0);
+
+    function measure() {
+      if (!container || !textEl) return;
+      const overflow = textEl.scrollWidth - container.clientWidth;
+      setDistance(overflow > 1 ? overflow : 0);
+    }
+
+    measure();
+    document.fonts?.ready.then(measure);
+
+    const resizeObserver = new ResizeObserver(measure);
+    resizeObserver.observe(container);
+
+    return () => resizeObserver.disconnect();
   }, [containerRef, textRef, text]);
 
   return distance;
