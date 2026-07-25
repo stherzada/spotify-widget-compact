@@ -7,7 +7,10 @@ const redis = Redis.fromEnv();
 
 const SESSION_PREFIX = "spotify-widget:session:";
 const SESSION_TTL_SECONDS = 60 * 60 * 24 * 365;
-const SESSION_CACHE_TTL_MS = 60 * 1000;
+// Safe well beyond 60s: getValidAccessToken (app/api/now-playing/route.ts)
+// checks the token's own expiry with a buffer before using it, so serving a
+// cached session never risks handing out a stale access token.
+const SESSION_CACHE_TTL_MS = 5 * 60 * 1000;
 const sessionCache = new Map<string, { session: Session; expiresAt: number }>();
 
 export function generateSid(): string {

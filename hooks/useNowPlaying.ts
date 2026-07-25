@@ -7,14 +7,17 @@ const STEADY_INTERVAL_MS = 10000;
 const MIN_POLL_MS = 2000;
 const TRACK_END_SETTLE_MS = 1000;
 const MAX_BACKOFF_MS = 30000;
+const MAX_PAUSED_POLL_MS = 30000;
 const REVEAL_DELAY_MS = 500;
 
-function nextPollDelay(data: NowPlaying): number {
-  if (!data.isPlaying) return STEADY_INTERVAL_MS;
+function nextPausedPollDelay(currentPausedDelayMs: number): number {
+  return Math.min(currentPausedDelayMs * 2, MAX_PAUSED_POLL_MS);
+}
+
+function nextPollDelay(data: NowPlaying, pausedDelayMs: number): number {
+  if (!data.isPlaying) return pausedDelayMs;
   const remaining = data.durationMs - data.progressMs;
   if (remaining <= 0) return MIN_POLL_MS;
-  // Poll at the steady cadence, but if the track ends sooner, schedule a poll
-  // right after so a track change at the transition is picked up promptly.
   return Math.max(MIN_POLL_MS, Math.min(STEADY_INTERVAL_MS, remaining + TRACK_END_SETTLE_MS));
 }
 
@@ -51,6 +54,7 @@ export function useNowPlaying(
     let pollTimeout: ReturnType<typeof setTimeout> | null = null;
     let revealTimeout: ReturnType<typeof setTimeout> | null = null;
     let backoffMs = STEADY_INTERVAL_MS;
+    let pausedDelayMs = STEADY_INTERVAL_MS;
 
     function schedule(delay: number) {
       if (cancelled || document.hidden) return;
@@ -70,6 +74,7 @@ export function useNowPlaying(
 
         setNowPlaying(data);
         backoffMs = STEADY_INTERVAL_MS;
+        pausedDelayMs = data.isPlaying ? STEADY_INTERVAL_MS : nextPausedPollDelay(pausedDelayMs);
 
         const playStateChanged = data.isPlaying !== lastIsPlayingRef.current;
         const trackChanged = data.songUri !== null && data.songUri !== lastSongUriRef.current;
@@ -85,7 +90,7 @@ export function useNowPlaying(
         lastIsPlayingRef.current = data.isPlaying;
         if (data.songUri) lastSongUriRef.current = data.songUri;
 
-        schedule(nextPollDelay(data));
+        schedule(nextPollDelay(data, pausedDelayMs));
       } catch {
         backoffMs = Math.min(backoffMs * 2, MAX_BACKOFF_MS);
         schedule(backoffMs);
